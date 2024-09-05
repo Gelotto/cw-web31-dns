@@ -1,7 +1,7 @@
 use anybuf::Anybuf;
 use contract::{
+    models::Config,
     msg::{InstantiateMsg, MigrateMsg},
-    state::models::Config,
     Contract, ContractExecuteMsgFns, ContractQueryMsgFns,
 };
 use cosmos_sdk_proto::Any;
@@ -42,11 +42,11 @@ pub fn main() -> anyhow::Result<()> {
         contract.migrate_if_needed(&MigrateMsg {})?;
     }
 
-    // can call any necessary execution messages here like adding admin, etc.
-    contract.set_config(Config {})?;
+    // TODO: can call any necessary execution messages here like adding admin, etc.
+    // contract.set_config(Config {})?;
 
-    // can also query any necessary data here from the contract
-    contract.config()?;
+    // TODO: can also query any necessary data here from the contract
+    // contract.config()?;
 
     Ok(())
 }

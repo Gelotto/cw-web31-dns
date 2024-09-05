@@ -1,4 +1,4 @@
-pub mod set_config;
+pub mod register;
 
 use cosmwasm_std::{DepsMut, Env, MessageInfo};
 
