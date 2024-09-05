@@ -2,10 +2,17 @@ use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::Addr;
 use serde_json::Value;
 
-use crate::models::{Config, NameMetadata};
+use crate::{
+    models::{Config, NameMetadata},
+    token::TokenAmount,
+};
 
 #[cw_serde]
-pub struct InstantiateMsg {}
+pub struct InstantiateMsg {
+    pub price: TokenAmount,
+    pub fee_recipient: Addr,
+    pub max_name_len: u8,
+}
 
 #[cw_serde]
 pub struct RegisterMsg {

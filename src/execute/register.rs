@@ -2,7 +2,7 @@ use crate::{
     error::ContractError,
     models::{NameMetadata, NameRecord},
     msg::RegisterMsg,
-    state::{FEE_RECIPIENT, NAME_METADATA, NAME_RECORDS, UNIT_PRICE},
+    state::{FEE_RECIPIENT, NAME_METADATA, NAME_RECORDS, PRICE},
     token::TokenAmount,
 };
 use cosmwasm_std::{attr, Response};
@@ -15,7 +15,7 @@ pub fn exec_register(
 ) -> Result<Response, ContractError> {
     let Context { deps, info, env } = ctx;
     let RegisterMsg { name, address, meta } = msg;
-    let TokenAmount { token, amount: price } = UNIT_PRICE.load(deps.storage)?;
+    let TokenAmount { token, amount: price } = PRICE.load(deps.storage)?;
 
     // Ensure user has sent payment
     if token.find_in_funds(&info.funds, Some(price)).is_none() {
