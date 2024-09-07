@@ -6,9 +6,8 @@ use crate::{error::ContractError, msg::RenderQueryMsg, state::resolve_contract_a
 use super::ReadonlyContext;
 
 #[cw_serde]
-pub struct RenderParams {
-    pub path: String,
-    pub context: Option<Value>,
+pub enum CwWebsiteQueryMsg {
+    Render { path: String, context: Option<Value> },
 }
 
 /// Lookup a contract by name or address and proxy pass the template path and
@@ -28,7 +27,9 @@ pub fn query_render(
     let contract_addr = resolve_contract_address(&deps, &contract)?;
 
     // Render and return HTML
-    Ok(deps
+    let html: String = deps
         .querier
-        .query_wasm_smart(contract_addr, &RenderParams { path, context })?)
+        .query_wasm_smart(contract_addr, &CwWebsiteQueryMsg::Render { path, context })?;
+
+    Ok(html)
 }

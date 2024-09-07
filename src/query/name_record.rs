@@ -2,6 +2,7 @@ use crate::{
     error::ContractError,
     models::PublicNameRecord,
     state::{CONTRACT_ADDR_2_NAME, NAME_METADATA, NAME_RECORDS},
+    utils::is_bech32_address,
 };
 
 use super::ReadonlyContext;
@@ -14,8 +15,8 @@ pub fn query_name_record(
     let ReadonlyContext { deps, .. } = ctx;
 
     // Find NameRecord by contract address or name
-    if let Some(cannonical_name) = if let Ok(contract_addr) = deps.api.addr_validate(&contract) {
-        CONTRACT_ADDR_2_NAME.may_load(deps.storage, &contract_addr)?
+    if let Some(cannonical_name) = if is_bech32_address(&contract) {
+        CONTRACT_ADDR_2_NAME.may_load(deps.storage, &contract)?
     } else {
         Some(contract.to_ascii_lowercase())
     } {

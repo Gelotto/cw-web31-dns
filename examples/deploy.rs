@@ -1,14 +1,16 @@
 use anybuf::Anybuf;
-use contract::{
-    models::Config,
-    msg::{InstantiateMsg, MigrateMsg},
-    Contract, ContractExecuteMsgFns, ContractQueryMsgFns,
-};
 use cosmos_sdk_proto::Any;
+use cosmwasm_std::Uint128;
 use cw_orch::{
     anyhow::{self, Ok},
     daemon::{networks, TxSender},
     prelude::*,
+};
+use cw_web31_dns::{
+    models::Config,
+    msg::{InstantiateMsg, MigrateMsg},
+    token::{Token, TokenAmount},
+    Contract, ContractExecuteMsgFns, ContractQueryMsgFns,
 };
 use dotenv;
 use pretty_env_logger;
@@ -28,7 +30,18 @@ pub fn main() -> anyhow::Result<()> {
     contract.upload_if_needed()?;
 
     if contract.address().is_err() {
-        contract.instantiate(&InstantiateMsg {}, Some(&sender), None)?;
+        contract.instantiate(
+            &InstantiateMsg {
+                fee_recipient: Addr::unchecked(FEE_COLLECTION_ADDR),
+                max_name_len: 20,
+                price: TokenAmount {
+                    amount: Uint128::from(1u64),
+                    token: Token::Denom("ujuno".to_string()),
+                },
+            },
+            Some(&sender),
+            None,
+        )?;
 
         let _ = chain.commit_any::<Any>(
             vec![juno_feeshare_msg(

@@ -3,7 +3,7 @@ use cosmwasm_std::Addr;
 use serde_json::Value;
 
 use crate::{
-    models::{Config, NameMetadata},
+    models::{Config, NameMetadata, PublicNameRecord},
     token::TokenAmount,
 };
 
@@ -16,8 +16,9 @@ pub struct InstantiateMsg {
 
 #[cw_serde]
 pub struct RegisterMsg {
+    pub owner: Addr,
     pub name: String,
-    pub address: Addr,
+    pub address: String,
     pub meta: Option<NameMetadata>,
 }
 
@@ -42,6 +43,9 @@ pub enum QueryMsg {
 
     #[returns(String)]
     Render(RenderQueryMsg),
+
+    #[returns(PublicNameRecord)]
+    NameRecord { contract: String },
 }
 
 #[cw_serde]

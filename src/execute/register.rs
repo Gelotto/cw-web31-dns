@@ -4,6 +4,7 @@ use crate::{
     msg::RegisterMsg,
     state::{FEE_RECIPIENT, NAME_METADATA, NAME_RECORDS, PRICE},
     token::TokenAmount,
+    utils::is_bech32_address,
 };
 use cosmwasm_std::{attr, Response};
 
@@ -14,8 +15,17 @@ pub fn exec_register(
     msg: RegisterMsg,
 ) -> Result<Response, ContractError> {
     let Context { deps, info, env } = ctx;
-    let RegisterMsg { name, address, meta } = msg;
+
+    let RegisterMsg {
+        owner,
+        name,
+        address: contract_addr,
+        meta,
+    } = msg;
+
     let TokenAmount { token, amount: price } = PRICE.load(deps.storage)?;
+
+    let cannonical_name = name.to_ascii_lowercase();
 
     // Ensure user has sent payment
     if token.find_in_funds(&info.funds, Some(price)).is_none() {
@@ -24,13 +34,17 @@ pub fn exec_register(
         });
     }
 
+    // Ensure the address string is a valid bech32 address
+    if !is_bech32_address(&contract_addr) {
+        return Err(ContractError::ValidationError {
+            reason: format!("{} is not a valid bech32 address", &contract_addr),
+        });
+    }
+
     // Add transfer submsg to response to send platform fee
     let resp = Response::new().add_submessage(token.transfer(&FEE_RECIPIENT.load(deps.storage)?, price)?);
 
     // Create a name record or error out if already exists
-    let contract_addr = deps.api.addr_validate(address.as_str())?;
-    let cannonical_name = name.to_ascii_lowercase();
-
     NAME_RECORDS.update(
         deps.storage,
         &cannonical_name,
@@ -39,9 +53,9 @@ pub fn exec_register(
                 return Err(ContractError::NameExists { name });
             }
             Ok(NameRecord {
-                contract: contract_addr,
+                contract: contract_addr.to_owned(),
                 created_at: env.block.time,
-                owner: info.sender.to_owned(),
+                owner: deps.api.addr_validate(&owner.as_str())?,
             })
         },
     )?;
@@ -52,7 +66,9 @@ pub fn exec_register(
         &cannonical_name,
         &meta.unwrap_or_else(|| NameMetadata {
             title: None,
-            desription: None,
+            description: None,
+            logo: None,
+            favicon: None,
             keywords: vec![],
         }),
     )?;
@@ -60,6 +76,7 @@ pub fn exec_register(
     Ok(resp.add_attributes(vec![
         attr("action", "register"),
         attr("name", cannonical_name),
-        attr("address", address.to_string()),
+        attr("contract", contract_addr),
+        attr("owner", owner.to_string()),
     ]))
 }

@@ -2,6 +2,7 @@ use crate::error::ContractError;
 use crate::execute::register::exec_register;
 use crate::execute::Context;
 use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
+use crate::query::name_record::query_name_record;
 use crate::query::render::query_render;
 use crate::query::{config::query_config, ReadonlyContext};
 use crate::state;
@@ -45,6 +46,7 @@ pub fn query(
     let ctx = ReadonlyContext { deps, env };
     let result = match msg {
         QueryMsg::Config {} => to_json_binary(&query_config(ctx)?),
+        QueryMsg::NameRecord { contract } => to_json_binary(&query_name_record(ctx, contract)?),
         QueryMsg::Render(msg) => to_json_binary(&query_render(ctx, msg)?),
     }?;
     Ok(result)
