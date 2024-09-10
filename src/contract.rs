@@ -1,5 +1,6 @@
 use crate::error::ContractError;
 use crate::execute::register::exec_register;
+use crate::execute::update_metadata::exec_update_metadata;
 use crate::execute::Context;
 use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
 use crate::query::name_record::query_name_record;
@@ -34,6 +35,7 @@ pub fn execute(
     let ctx = Context { deps, env, info };
     match msg {
         ExecuteMsg::Register(msg) => exec_register(ctx, msg),
+        ExecuteMsg::UpdateMetadata(msg) => exec_update_metadata(ctx, msg),
     }
 }
 

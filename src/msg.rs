@@ -23,9 +23,17 @@ pub struct RegisterMsg {
 }
 
 #[cw_serde]
+pub struct UpdateMetadataMsg {
+    pub name: String,
+    pub meta: NameMetadata,
+}
+
+#[cw_serde]
 #[derive(cw_orch::ExecuteFns)]
 pub enum ExecuteMsg {
     Register(RegisterMsg),
+    UpdateMetadata(UpdateMetadataMsg),
+
 }
 
 #[cw_serde]

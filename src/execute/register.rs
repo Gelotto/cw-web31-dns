@@ -1,6 +1,6 @@
 use crate::{
     error::ContractError,
-    models::{NameMetadata, NameRecord},
+    models::NameRecord,
     msg::RegisterMsg,
     state::{FEE_RECIPIENT, NAME_METADATA, NAME_RECORDS, PRICE},
     token::TokenAmount,
@@ -64,13 +64,7 @@ pub fn exec_register(
     NAME_METADATA.save(
         deps.storage,
         &cannonical_name,
-        &meta.unwrap_or_else(|| NameMetadata {
-            title: None,
-            description: None,
-            logo: None,
-            favicon: None,
-            keywords: vec![],
-        }),
+        &meta.unwrap_or_default(),
     )?;
 
     Ok(resp.add_attributes(vec![
