@@ -1,4 +1,5 @@
 pub mod register;
+pub mod update_metadata;
 
 use cosmwasm_std::{DepsMut, Env, MessageInfo};
 
