@@ -1,7 +1,8 @@
+use super::query::ReadonlyContext;
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, Timestamp};
 
-use crate::error::ContractError;
+use crate::{error::ContractError, state::NAME_METADATA};
 
 #[cw_serde]
 pub struct Config {}
@@ -75,5 +76,24 @@ impl NameMetadata {
             }
         }
         Ok(())
+    }
+}
+
+impl NameRecord {
+    pub fn build_public_name_record(
+        &self,
+        ctx: &ReadonlyContext,
+        cannonical_name: String,
+    ) -> Result<PublicNameRecord, ContractError> {
+        let ReadonlyContext { deps, .. } = ctx;
+
+        let meta = NAME_METADATA.load(deps.storage, &cannonical_name)?;
+        return Ok(PublicNameRecord {
+            owner: self.owner.clone(),
+            contract: self.contract.clone(),
+            created_at: self.created_at,
+            cannonical_name,
+            meta,
+        });
     }
 }

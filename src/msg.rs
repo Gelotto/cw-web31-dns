@@ -33,7 +33,6 @@ pub struct UpdateMetadataMsg {
 pub enum ExecuteMsg {
     Register(RegisterMsg),
     UpdateMetadata(UpdateMetadataMsg),
-
 }
 
 #[cw_serde]
@@ -41,6 +40,13 @@ pub struct RenderQueryMsg {
     pub contract: String,
     pub path: String,
     pub context: Option<Value>,
+}
+
+#[cw_serde]
+pub struct NameRecordsQueryMsg {
+    pub limit: u8,
+    pub cursor: Option<String>,
+    pub network_prefix: Option<String>, // pub context: Option<Value>,
 }
 
 #[cw_serde]
@@ -54,6 +60,9 @@ pub enum QueryMsg {
 
     #[returns(PublicNameRecord)]
     NameRecord { contract: String },
+
+    #[returns(NameRecordsQueryResponse)]
+    NameRecords(NameRecordsQueryMsg),
 }
 
 #[cw_serde]
@@ -61,3 +70,9 @@ pub struct MigrateMsg {}
 
 #[cw_serde]
 pub struct ConfigResponse(pub Config);
+
+#[cw_serde]
+pub struct NameRecordsQueryResponse {
+    pub name_records: Vec<PublicNameRecord>,
+    pub next_cursor: Option<String>,
+}

@@ -20,6 +20,9 @@ pub enum ContractError {
 
     #[error("ValidationError: {reason:?}")]
     ValidationError { reason: String },
+
+    #[error("TooManyRecords: Too many records requested. Maximum Limit is {limit}")]
+    TooManyRecords { limit: u8 },
 }
 
 impl From<ContractError> for StdError {
