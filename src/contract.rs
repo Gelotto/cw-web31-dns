@@ -4,6 +4,7 @@ use crate::execute::update_metadata::exec_update_metadata;
 use crate::execute::Context;
 use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
 use crate::query::name_record::query_name_record;
+use crate::query::name_records::query_name_records;
 use crate::query::render::query_render;
 use crate::query::{config::query_config, ReadonlyContext};
 use crate::state;
@@ -50,6 +51,7 @@ pub fn query(
         QueryMsg::Config {} => to_json_binary(&query_config(ctx)?),
         QueryMsg::NameRecord { contract } => to_json_binary(&query_name_record(ctx, contract)?),
         QueryMsg::Render(msg) => to_json_binary(&query_render(ctx, msg)?),
+        QueryMsg::NameRecords(msg) => to_json_binary(&query_name_records(ctx, msg)?),
     }?;
     Ok(result)
 }

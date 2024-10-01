@@ -61,11 +61,7 @@ pub fn exec_register(
     )?;
 
     // Save or init empty metadata for the NameRecord
-    NAME_METADATA.save(
-        deps.storage,
-        &cannonical_name,
-        &meta.unwrap_or_default(),
-    )?;
+    NAME_METADATA.save(deps.storage, &cannonical_name, &meta.unwrap_or_default())?;
 
     Ok(resp.add_attributes(vec![
         attr("action", "register"),
